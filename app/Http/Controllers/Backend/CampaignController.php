@@ -17,7 +17,7 @@ class CampaignController extends Controller
     public function index()
     {
         $campaigns = Campaign::latest()->get();
-        return view('backend.content.campaign.index',compact('campaigns'));
+        return view('backend.content.campaign.index', compact('campaigns'));
     }
 
     /**
@@ -92,7 +92,9 @@ class CampaignController extends Controller
      */
     public function edit($id)
     {
-        //
+        $campaign = Campaign::findOrFail($id);
+        $products = Product::where('status', 'Active')->get();
+        return view('backend.content.campaign.edit', compact('campaign', 'products'));
     }
 
     /**
@@ -104,7 +106,42 @@ class CampaignController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'subtitle' => 'nullable|string|max:255',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'oldprice_title' => 'nullable|string|max:255',
+            'price_title' => 'nullable|string|max:255',
+            'description' => 'nullable|string',
+            'product_id' => 'required|array',
+        ]);
+
+        $campaign = Campaign::findOrFail($id);
+
+        $campaign->title = $request->title;
+        $campaign->subtitle = $request->subtitle;
+        $campaign->oldprice_title = $request->oldprice_title;
+        $campaign->price_title = $request->price_title;
+        $campaign->description = $request->description;
+        $campaign->product_id = json_encode($request->product_id);
+
+        if ($request->file('image')) {
+
+            if ($campaign->image && file_exists($campaign->image)) {
+                unlink($campaign->image);
+            }
+
+            $image = $request->file('image');
+            $imageName = microtime(true) . '.' . $image->getClientOriginalExtension();
+            $imagePath = 'public/images/campaign/';
+            $image->move($imagePath, $imageName);
+
+            $campaign->image = $imagePath . $imageName;
+        }
+
+        $campaign->save();
+
+        return redirect()->route('admin.campaigns.index')->with('success', 'Campaign Updated Successfully!');
     }
 
     /**
@@ -115,6 +152,14 @@ class CampaignController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $campaign = Campaign::findOrFail($id);
+        if ($campaign->image && file_exists(public_path($campaign->image))) {
+            unlink(public_path($campaign->image));
+        }
+
+        $campaign->delete();
+
+        return redirect()->route('admin.campaigns.index')
+            ->with('success', 'Campaign deleted successfully!');
     }
 }
