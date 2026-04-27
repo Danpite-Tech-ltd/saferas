@@ -15,6 +15,7 @@ use App\Models\Basicinfo;
 use App\Models\Blog;
 use App\Models\Order;
 use App\Models\Brand;
+use App\Models\Campaign;
 use App\Models\Comment;
 use App\Models\Varient;
 use App\Models\Weight;
@@ -193,6 +194,12 @@ class WebviewController extends Controller
     $blogs = Blog::where('status','Active')->latest()->get();
      $medias = Menu::where('status', 'Active')->get();
         return view('webview.content.maincontent', ['categories' => $categories, 'allproducts' => $allproducts, 'sliders' => $sliders, 'adds' => $adds, 'addbottoms' => $addbottoms, 'topproducts' => $topproducts, 'categoryproducts' => $categoryproducts,'medias'=> $medias, 'ad_one' => $ad_one, 'ad_two' => $ad_two, 'ad_three' => $ad_three,'ad_four' => $ad_four, 'blogs' => $blogs,'ad_five' => $ad_five]);
+    }
+
+    public function campaign($slug)
+    {
+        $campaign = Campaign::where('slug',$slug)->first();
+        return view('webview.content.campaign.campaign');
     }
 
    public function shopPage(Request $request)

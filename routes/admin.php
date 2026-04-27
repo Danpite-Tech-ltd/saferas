@@ -40,6 +40,7 @@ use App\Http\Controllers\ExpensetypeController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\PathaoController;
 use App\Http\Controllers\AreaController;
+use App\Http\Controllers\Backend\CampaignController;
 use App\Http\Controllers\CouponController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\SupplierpaymentController;
@@ -214,6 +215,9 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth.admin:admin']], functi
     Route::post('information/update/{slug}', [InformationController::class, 'update']);
     Route::get('menu/page/{slug}', [InformationController::class, 'create']);
     Route::post('menu/page/create/{slug}', [InformationController::class, 'createpage']);
+
+    // campaign
+    Route::resource('campaigns', CampaignController::class, ['names' => 'admin.campaigns']);
 
     // GET CITY
     Route::get('get/city', [PathaoController::class, 'getCities']);

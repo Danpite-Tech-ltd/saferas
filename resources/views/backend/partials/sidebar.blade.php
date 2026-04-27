@@ -21,7 +21,7 @@ $admin=App\Models\Admin::where('id',Auth::guard('admin')->user()->id)->first();
                     <a href="{{ url('admin/block-user') }}" class="dropdown-item">Block Ip</a>
                 </div>
             </div>
-            
+
             @if ($admin->hasRole('manager') || $admin->hasRole('superadmin'))
             <div class="nav-item dropdown">
                 <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i
@@ -38,7 +38,7 @@ $admin=App\Models\Admin::where('id',Auth::guard('admin')->user()->id)->first();
                 </div>
             </div>
             @endif
-            
+
             <div class="nav-item dropdown">
                 <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>Store</a>
                 <div class="bg-transparent border-0 dropdown-menu">
@@ -58,7 +58,14 @@ $admin=App\Models\Admin::where('id',Auth::guard('admin')->user()->id)->first();
                     <!--<a href="{{ route('stocks.index') }}" class="dropdown-item">Stock</a>-->
                 </div>
             </div>
-            
+            <div class="nav-item dropdown">
+                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>Landingpage</a>
+                <div class="bg-transparent border-0 dropdown-menu">
+                    <a href="{{ route('admin.campaigns.create') }}" class="dropdown-item">Create Landingpage</a>
+                    <a href="{{ route('admin.campaigns.index') }}" class="dropdown-item">Landingpage List</a>
+                </div>
+            </div>
+
             <div class="nav-item dropdown">
                 <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i
                         class="far fa-file-alt me-2"></i>Orders</a>
@@ -126,8 +133,8 @@ $admin=App\Models\Admin::where('id',Auth::guard('admin')->user()->id)->first();
                 </div>
             </div>
             @endif
-            
-            @if ($admin->hasRole('user')) 
+
+            @if ($admin->hasRole('user'))
             <div class="nav-item dropdown">
                 <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i
                         class="far fa-file-alt me-2"></i>Orders</a>
@@ -140,7 +147,7 @@ $admin=App\Models\Admin::where('id',Auth::guard('admin')->user()->id)->first();
                 </div>
             </div>
             @endif
-            
+
             @if ($admin->hasRole('accounts'))
             <div class="nav-item dropdown">
                 <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i
@@ -210,7 +217,7 @@ $admin=App\Models\Admin::where('id',Auth::guard('admin')->user()->id)->first();
             </div>
             @endif
 
-            @if ($admin->hasRole('support')) 
+            @if ($admin->hasRole('support'))
             <div class="nav-item dropdown">
                 <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i
                         class="far fa-file-alt me-2"></i>Orders</a>
@@ -222,7 +229,7 @@ $admin=App\Models\Admin::where('id',Auth::guard('admin')->user()->id)->first();
                     <a href="{{ url('complain/Pending') }}" class="dropdown-item">Complane Box</a>
                     <a href="{{ url('admin/block-user') }}" class="dropdown-item">Block Ip</a>
                 </div>
-            </div> 
+            </div>
             <div class="nav-item dropdown">
                 <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i
                         class="far fa-file-alt me-2"></i>Report</a>
@@ -235,14 +242,14 @@ $admin=App\Models\Admin::where('id',Auth::guard('admin')->user()->id)->first();
                 </div>
             </div>
             @endif
-            @if ($admin->hasRole('storeassistant')) 
+            @if ($admin->hasRole('storeassistant'))
             <div class="nav-item dropdown">
                 <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>Store</a>
-                <div class="bg-transparent border-0 dropdown-menu"> 
+                <div class="bg-transparent border-0 dropdown-menu">
                     <a href="{{ route('orderchange.bybarcode') }}" class="dropdown-item">Auto Shipment</a>
                     <a href="{{ route('orderchange.manualbarcode') }}" class="dropdown-item">Manual Shipment</a>
                     <a href="{{ route('orderchange.autoreturn') }}" class="dropdown-item">Auto Return</a>
-                    <a href="{{ route('orderchange.manualreturn') }}" class="dropdown-item">Manual Return</a> 
+                    <a href="{{ route('orderchange.manualreturn') }}" class="dropdown-item">Manual Return</a>
                 </div>
             </div>
             <div class="nav-item dropdown">
@@ -256,8 +263,8 @@ $admin=App\Models\Admin::where('id',Auth::guard('admin')->user()->id)->first();
                     <a href="{{ url('complain/Pending') }}" class="dropdown-item">Complane Box</a>
                     <a href="{{ url('admin/block-user') }}" class="dropdown-item">Block Ip</a>
                 </div>
-            </div> 
-            
+            </div>
+
             <div class="nav-item dropdown">
                 <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i
                         class="far fa-file-alt me-2"></i>Report</a>
