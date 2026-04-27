@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Campaign;
+use App\Models\Product;
 use Illuminate\Http\Request;
 
 class CampaignController extends Controller
@@ -24,7 +26,8 @@ class CampaignController extends Controller
      */
     public function create()
     {
-        //
+        $products = Product::where('status', 'Active')->get();
+        return view('backend.content.campaign.create', compact('products'));
     }
 
     /**
@@ -35,7 +38,38 @@ class CampaignController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // Validation
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'subtitle' => 'nullable|string|max:255',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'oldprice_title' => 'nullable|string|max:255',
+            'price_title' => 'nullable|string|max:255',
+            'description' => 'nullable|string',
+            'product_id' => 'required|array',
+        ]);
+
+        $campaign = new Campaign();
+        $campaign->title = $request->title;
+        $campaign->subtitle = $request->subtitle;
+        $campaign->oldprice_title = $request->oldprice_title;
+        $campaign->price_title = $request->price_title;
+        $campaign->description = $request->description;
+        $campaign->product_id = json_encode($request->product_id);
+
+        if ($request->file('image')) {
+            $image = $request->file('image');
+
+            $imageName          = microtime('.') . '.' . $image->getClientOriginalExtension();
+            $imagePath          = 'public/images/campaign/';
+            $image->move($imagePath, $imageName);
+
+            $campaign->image   = $imagePath . $imageName;
+        }
+
+        $campaign->save();
+
+        return redirect()->route('admin.campaigns.index')->with('success', 'Campaign Created Successfully!');
     }
 
     /**
