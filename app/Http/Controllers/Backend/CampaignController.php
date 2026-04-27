@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Campaign;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+
 
 class CampaignController extends Controller
 {
@@ -41,6 +43,7 @@ class CampaignController extends Controller
     {
         // Validation
         $request->validate([
+            'name' => 'required|string|max:255',
             'title' => 'required|string|max:255',
             'subtitle' => 'nullable|string|max:255',
             'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
@@ -51,6 +54,8 @@ class CampaignController extends Controller
         ]);
 
         $campaign = new Campaign();
+        $campaign->name = $request->name;
+        $campaign->slug = Str::slug($request->name);
         $campaign->title = $request->title;
         $campaign->subtitle = $request->subtitle;
         $campaign->oldprice_title = $request->oldprice_title;
@@ -107,6 +112,7 @@ class CampaignController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
+            'name' => 'required|string|max:255',
             'title' => 'required|string|max:255',
             'subtitle' => 'nullable|string|max:255',
             'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
@@ -118,6 +124,8 @@ class CampaignController extends Controller
 
         $campaign = Campaign::findOrFail($id);
 
+        $campaign->name = $request->name;
+        $campaign->slug = Str::slug($request->name);
         $campaign->title = $request->title;
         $campaign->subtitle = $request->subtitle;
         $campaign->oldprice_title = $request->oldprice_title;

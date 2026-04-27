@@ -18,8 +18,8 @@
                         <tr>
                             <th>SL</th>
                             <th>Image</th>
-                            <th>Title</th>
-                            <th>Price</th>
+                            <th>Name</th>
+                            <th>Price Title</th>
                             <th>Products</th>
                             <th>Status</th>
                             <th>Action</th>
@@ -36,7 +36,7 @@
                                 </td>
 
                                 <td style="max-width:250px;">
-                                    {{ Str::limit($campaign->title, 60) }}
+                                    {{ Str::limit($campaign->name, 60) }}
                                 </td>
 
                                 <td>
@@ -65,6 +65,9 @@
                                 </td>
 
                                 <td>
+                                    <a href="{{ route('campaign', $campaign->slug) }}"
+                                        class="btn btn-sm btn-info">Show</a>
+
                                     <a href="{{ route('admin.campaigns.edit', $campaign->id) }}"
                                         class="btn btn-sm btn-warning">Edit</a>
                                     <form action="{{ route('admin.campaigns.destroy', $campaign->id) }}" method="POST"

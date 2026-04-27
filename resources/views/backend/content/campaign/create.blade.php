@@ -60,6 +60,11 @@
 
                 <div class="row">
                     <div class="mb-3 col-md-12">
+                        <label class="form-label">Landingpage Name</label>
+                        <input type="text" class="form-control" name="name">
+                    </div>
+
+                    <div class="mb-3 col-md-12">
                         <label class="form-label">Title</label>
                         <input type="text" class="form-control" name="title">
                     </div>
