@@ -125,60 +125,78 @@
     {{-- ==================== product details section end ================== --}}
     {{-- ========================== order form start ================== --}}
     <section id="order_form">
-        <div class="container my-4">
+    <div class="container my-4">
+
+        <form action="{{ route('campaign.submit') }}" method="POST">
+            @csrf
+
+            <!-- 🔥 HIDDEN FIELDS FOR LARAVEL -->
+            <input type="hidden" name="product_id" id="form_product_id">
+            <input type="hidden" name="product_name" id="form_product_name">
+            <input type="hidden" name="color" id="form_color">
+            <input type="hidden" name="size" id="form_size">
+            <input type="hidden" name="qty" id="form_qty">
+            <input type="hidden" name="price" id="form_price">
+            <input type="hidden" name="shipping" id="form_shipping">
+            <input type="hidden" name="total" id="form_total">
+
             <div class="landing-box">
+
                 <h3 class="text-center fw-bold">অর্ডার করতে নিচের ফরমটি পূরণ করুন</h3>
-                <p class="mb-4 text-center text-danger small">
-                    কালার এবং সংখ্যা সিলেক্ট করুন
-                </p>
 
                 <!-- PRODUCT LIST -->
                 <div class="mb-4 landing-product-list">
-
-                    @foreach ($products as $product)
+                    @foreach ($products as $key => $product)
                         <label class="landing-product-item">
-                            <input type="radio" name="product">
+
                             <div class="landing-product-content">
 
-                                <!-- LEFT -->
                                 <div class="landing-product-left">
+
+                                    <input type="radio" name="product"
+                                           value="{{ $product->id }}"
+                                           {{ $key == 0 ? 'checked' : '' }}
+                                           data-product='@json($product)'>
+
                                     <img src="{{ asset($product->ProductImage) }}">
                                     <span>{{ $product->ProductName }}</span>
+
                                 </div>
 
-                                <!-- QTY -->
                                 <div class="landing-qty">
-                                    <button>-</button>
-                                    <span>1</span>
-                                    <button>+</button>
+                                    <button type="button" class="qty-minus">-</button>
+                                    <span class="qty">1</span>
+                                    <button type="button" class="qty-plus">+</button>
                                 </div>
 
-                                <!-- PRICE -->
-                                <div class="landing-price">450.00৳</div>
+                                <div class="landing-price price-box">0৳</div>
 
                             </div>
+
                         </label>
                     @endforeach
-
                 </div>
 
                 <div class="row">
-                    <!-- LEFT -->
+
                     <div class="col-lg-7">
 
                         <h5>Billing details</h5>
 
-                        <input class="mb-2 form-control" placeholder="আপনার নাম *">
-                        <input class="mb-2 form-control" placeholder="আপনার ফোন নাম্বার *">
-                        <textarea class="mb-3 form-control" placeholder="আপনার ঠিকানা *"></textarea>
+                        <input name="name" class="mb-2 form-control" placeholder="আপনার নাম *">
+                        <input name="phone" class="mb-2 form-control" placeholder="আপনার ফোন নাম্বার *">
+                        <textarea name="address" class="mb-3 form-control" placeholder="আপনার ঠিকানা *"></textarea>
 
-                        <!-- SIZE RADIO -->
+                        <!-- COLOR -->
                         <div class="mb-3">
-                            <label class="mb-1 fw-bold d-block">সাইজ *</label>
+                            <label class="fw-bold d-block">কালার *</label>
+                            <div id="color-list"></div>
+                        </div>
 
-                            <label class="landing-radio">
-                                <input type="radio" name="size"> 2-3Y
-                            </label>
+                        <!-- SIZE -->
+                        <div class="mb-3">
+                            <label class="fw-bold d-block">সাইজ *</label>
+                            <div id="size-list"></div>
                         </div>
 
                         <!-- SHIPPING -->
@@ -186,7 +204,9 @@
 
                             <label class="landing-ship-row">
                                 <div>
-                                    <input type="radio" name="ship">
+                                    <input type="radio" name="ship"
+                                           value="{{ $basicinfo->inside_dhaka_charge }}"
+                                           checked>
                                     <span>ঢাকার ভিতরে</span>
                                 </div>
                                 <span>{{ $basicinfo->inside_dhaka_charge }}৳</span>
@@ -194,7 +214,8 @@
 
                             <label class="landing-ship-row">
                                 <div>
-                                    <input type="radio" name="ship">
+                                    <input type="radio" name="ship"
+                                           value="{{ $basicinfo->outside_dhaka_charge }}">
                                     <span>ঢাকার বাইরে</span>
                                 </div>
                                 <span>{{ $basicinfo->outside_dhaka_charge }}৳</span>
@@ -204,52 +225,244 @@
 
                     </div>
 
-                    <!-- RIGHT -->
+                    <!-- SUMMARY -->
                     <div class="col-lg-5">
+
                         <div class="landing-summary">
 
                             <h5>Your order</h5>
 
                             <div class="landing-summary-product d-flex justify-content-between align-items-center">
+
                                 <div class="gap-2 d-flex align-items-center">
-                                    <img src="https://via.placeholder.com/50">
-                                    <span>কোড ১ × 1</span>
+                                    <img id="summary-image" width="50" height="50" style="object-fit:cover;">
+                                    <span id="summary-name"></span>
                                 </div>
-                                <span>450.00৳</span>
+
+                                <span id="summary-price"></span>
+
                             </div>
 
                             <hr>
 
                             <div class="d-flex justify-content-between">
                                 <span>Subtotal</span>
-                                <span>450.00৳</span>
+                                <span id="subtotal"></span>
                             </div>
 
                             <div class="d-flex justify-content-between fw-bold">
                                 <span>Total</span>
-                                <span>570.00৳</span>
+                                <span id="total"></span>
                             </div>
 
                             <div class="mt-3 landing-cash-box">
                                 <strong>পণ্য হাতে পেয়ে পেমেন্ট করুন</strong><br>
-                                কোনো Advance ছাড়াই অর্ডার করুন — পণ্য হাতে পেয়ে টাকা পরিশোধ করুন
+                                কোনো Advance ছাড়াই অর্ডার করুন
                             </div>
 
-                            <p class="mt-3 small">
-                                Your personal data will be used to process your order, support your experience
-                                throughout this website.
-                            </p>
-
-                            <button class="landing-btn">
-                                অর্ডার কনফার্ম করুন 570.00৳
+                            <button class="landing-btn" id="order-btn" type="submit">
+                                অর্ডার কনফার্ম করুন
                             </button>
+
                         </div>
+
                     </div>
+
                 </div>
+
             </div>
-        </div>
-    </section>
-    {{-- ========================== order form end ================== --}}
+
+        </form>
+
+    </div>
+</section>
+
+{{-- ================= SCRIPT ================= --}}
+<script>
+    let selectedProduct = null;
+    let selectedSize = null;
+    let selectedColor = null;
+    let qty = 1;
+
+    function setInitialPrices() {
+        document.querySelectorAll('.landing-product-item').forEach(item => {
+            let radio = item.querySelector('input[name="product"]');
+            let product = JSON.parse(radio.dataset.product);
+
+            if (product.sizes.length > 0) {
+                item.querySelector('.price-box').innerText =
+                    product.sizes[0].SalePrice + '৳';
+            }
+        });
+    }
+
+    function setSummaryImage() {
+
+        let img = "";
+
+        if (selectedColor && selectedColor.Image) { img = selectedColor.Image; }
+        else if (selectedProduct && selectedProduct.ProductImage)
+        { img = selectedProduct.ProductImage; }
+
+        if (!img) return;
+
+
+        document.getElementById('summary-image').src = "{{ asset('') }}" + img;
+    }
+
+    function loadProduct(product) {
+
+        selectedProduct = product;
+        qty = 1;
+
+        document.querySelectorAll('.landing-product-item').forEach(item => {
+            let radio = item.querySelector('input[name="product"]');
+            if (radio.checked) {
+                item.querySelector('.qty').innerText = 1;
+            }
+        });
+
+        let colorHtml = '';
+
+        product.variants.forEach((v, i) => {
+            colorHtml += `
+                <label>
+                    <input type="radio" name="color"
+                        value="${v.color}"
+                        ${i == 0 ? 'checked' : ''}
+                        data-variant='${JSON.stringify(v)}'>
+                    ${v.color}
+                </label>
+            `;
+        });
+
+        document.getElementById('color-list').innerHTML = colorHtml;
+        selectedColor = product.variants[0];
+
+        loadSizes(product);
+    }
+
+    function loadSizes(product) {
+
+        let sizeHtml = '';
+
+        product.sizes.forEach((s, i) => {
+            sizeHtml += `
+                <label>
+                    <input type="radio" name="size"
+                        value="${s.size}"
+                        ${i == 0 ? 'checked' : ''}
+                        data-size='${JSON.stringify(s)}'>
+                    ${s.size}
+                </label>
+            `;
+        });
+
+        document.getElementById('size-list').innerHTML = sizeHtml;
+        selectedSize = product.sizes[0];
+
+        updateSummary();
+    }
+
+    /* UPDATE SUMMARY */
+    function updateSummary() {
+
+        let price = selectedSize.SalePrice;
+        let shipping = document.querySelector('input[name="ship"]:checked').value;
+
+        let subtotal = price * qty;
+        let total = subtotal + parseInt(shipping);
+
+        document.getElementById('summary-name').innerText =
+            `${selectedProduct.ProductName} (${selectedColor.color}, ${selectedSize.size}) × ${qty}`;
+
+        document.getElementById('summary-price').innerText = price + '৳';
+
+        setSummaryImage();
+
+        document.getElementById('subtotal').innerText = subtotal + '৳';
+        document.getElementById('total').innerText = total + '৳';
+
+        document.getElementById('order-btn').innerText =
+            `অর্ডার কনফার্ম করুন ${total}৳`;
+
+        document.getElementById('form_product_id').value = selectedProduct.id;
+        document.getElementById('form_product_name').value = selectedProduct.ProductName;
+        document.getElementById('form_color').value = selectedColor.color;
+        document.getElementById('form_size').value = selectedSize.size;
+        document.getElementById('form_qty').value = qty;
+        document.getElementById('form_price').value = price;
+        document.getElementById('form_shipping').value = shipping;
+        document.getElementById('form_total').value = total;
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+
+        setInitialPrices();
+
+        let firstProduct = document.querySelector('input[name="product"]:checked');
+        if (firstProduct) {
+            loadProduct(JSON.parse(firstProduct.dataset.product));
+        }
+
+    });
+
+    document.querySelectorAll('input[name="product"]').forEach(el => {
+        el.addEventListener('change', function () {
+            loadProduct(JSON.parse(this.dataset.product));
+        });
+    });
+
+    document.addEventListener('change', function (e) {
+        if (e.target.name === 'size') {
+            selectedSize = JSON.parse(e.target.dataset.size);
+
+            document.getElementById('form_size').value = selectedSize.size;
+
+            updateSummary();
+        }
+    });
+
+    document.addEventListener('change', function (e) {
+        if (e.target.name === 'color') {
+            selectedColor = JSON.parse(e.target.dataset.variant);
+
+            document.getElementById('form_color').value = selectedColor.color;
+
+            updateSummary();
+        }
+    });
+
+    document.querySelectorAll('input[name="ship"]').forEach(el => {
+        el.addEventListener('change', updateSummary);
+    });
+
+    document.addEventListener('click', function (e) {
+
+        if (e.target.classList.contains('qty-plus')) {
+            let item = e.target.closest('.landing-product-item');
+            let radio = item.querySelector('input[name="product"]');
+
+            if (radio.checked) {
+                qty++;
+                item.querySelector('.qty').innerText = qty;
+                updateSummary();
+            }
+        }
+
+        if (e.target.classList.contains('qty-minus')) {
+            let item = e.target.closest('.landing-product-item');
+            let radio = item.querySelector('input[name="product"]');
+
+            if (radio.checked && qty > 1) {
+                qty--;
+                item.querySelector('.qty').innerText = qty;
+                updateSummary();
+            }
+        }
+
+    });
+</script>
 
 </body>
 
