@@ -26,7 +26,7 @@
 
             <p class="landing-sub-title">২ বছর থেকে ৯ বছরের বাচ্চাদের জন্য (ছেলে এবং মেয়ে উভয়ই)</p>
 
-            <a href="#" class="landing-order-btn">🛒 অর্ডার করতে চাই</a>
+            <a href="#order_form" class="landing-order-btn">🛒 অর্ডার করতে চাই</a>
 
             <div class="mt-4 row">
                 <div class="mb-3 col-md-12">
@@ -63,7 +63,7 @@
                 @endforeach
             </div>
             <div class="mt-4 text-center">
-                <a href="#" class="landing-order-btn2">🛒 অর্ডার করতে চাই</a>
+                <a href="#order_form" class="landing-order-btn2">🛒 অর্ডার করতে চাই</a>
             </div>
         </div>
     </section>
@@ -81,7 +81,7 @@
         </div>
     </section>
     <div class="mt-4 text-center">
-        <a href="#" class="landing-order-btn2">🛒 অর্ডার করতে চাই</a>
+        <a href="#order_form" class="landing-order-btn2">🛒 অর্ডার করতে চাই</a>
     </div>
 
     <div class="container mt-5">
@@ -122,7 +122,134 @@
         </div>
     </div>
 
-    {{-- ====================product details section end ================== --}}
+    {{-- ==================== product details section end ================== --}}
+    {{-- ========================== order form start ================== --}}
+    <section id="order_form">
+        <div class="container my-4">
+            <div class="landing-box">
+                <h3 class="text-center fw-bold">অর্ডার করতে নিচের ফরমটি পূরণ করুন</h3>
+                <p class="mb-4 text-center text-danger small">
+                    কালার এবং সংখ্যা সিলেক্ট করুন
+                </p>
+
+                <!-- PRODUCT LIST -->
+                <div class="mb-4 landing-product-list">
+
+                    @foreach ($products as $product)
+                        <label class="landing-product-item">
+                            <input type="radio" name="product">
+                            <div class="landing-product-content">
+
+                                <!-- LEFT -->
+                                <div class="landing-product-left">
+                                    <img src="{{ asset($product->ProductImage) }}">
+                                    <span>{{ $product->ProductName }}</span>
+                                </div>
+
+                                <!-- QTY -->
+                                <div class="landing-qty">
+                                    <button>-</button>
+                                    <span>1</span>
+                                    <button>+</button>
+                                </div>
+
+                                <!-- PRICE -->
+                                <div class="landing-price">450.00৳</div>
+
+                            </div>
+                        </label>
+                    @endforeach
+
+                </div>
+
+                <div class="row">
+                    <!-- LEFT -->
+                    <div class="col-lg-7">
+
+                        <h5>Billing details</h5>
+
+                        <input class="mb-2 form-control" placeholder="আপনার নাম *">
+                        <input class="mb-2 form-control" placeholder="আপনার ফোন নাম্বার *">
+                        <textarea class="mb-3 form-control" placeholder="আপনার ঠিকানা *"></textarea>
+
+                        <!-- SIZE RADIO -->
+                        <div class="mb-3">
+                            <label class="mb-1 fw-bold d-block">সাইজ *</label>
+
+                            <label class="landing-radio">
+                                <input type="radio" name="size"> 2-3Y
+                            </label>
+                        </div>
+
+                        <!-- SHIPPING -->
+                        <div class="landing-shipping">
+
+                            <label class="landing-ship-row">
+                                <div>
+                                    <input type="radio" name="ship">
+                                    <span>ঢাকার ভিতরে</span>
+                                </div>
+                                <span>{{ $basicinfo->inside_dhaka_charge }}৳</span>
+                            </label>
+
+                            <label class="landing-ship-row">
+                                <div>
+                                    <input type="radio" name="ship">
+                                    <span>ঢাকার বাইরে</span>
+                                </div>
+                                <span>{{ $basicinfo->outside_dhaka_charge }}৳</span>
+                            </label>
+
+                        </div>
+
+                    </div>
+
+                    <!-- RIGHT -->
+                    <div class="col-lg-5">
+                        <div class="landing-summary">
+
+                            <h5>Your order</h5>
+
+                            <div class="landing-summary-product d-flex justify-content-between align-items-center">
+                                <div class="gap-2 d-flex align-items-center">
+                                    <img src="https://via.placeholder.com/50">
+                                    <span>কোড ১ × 1</span>
+                                </div>
+                                <span>450.00৳</span>
+                            </div>
+
+                            <hr>
+
+                            <div class="d-flex justify-content-between">
+                                <span>Subtotal</span>
+                                <span>450.00৳</span>
+                            </div>
+
+                            <div class="d-flex justify-content-between fw-bold">
+                                <span>Total</span>
+                                <span>570.00৳</span>
+                            </div>
+
+                            <div class="mt-3 landing-cash-box">
+                                <strong>পণ্য হাতে পেয়ে পেমেন্ট করুন</strong><br>
+                                কোনো Advance ছাড়াই অর্ডার করুন — পণ্য হাতে পেয়ে টাকা পরিশোধ করুন
+                            </div>
+
+                            <p class="mt-3 small">
+                                Your personal data will be used to process your order, support your experience
+                                throughout this website.
+                            </p>
+
+                            <button class="landing-btn">
+                                অর্ডার কনফার্ম করুন 570.00৳
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    {{-- ========================== order form end ================== --}}
 
 </body>
 

@@ -192,6 +192,107 @@
     letter-spacing: 0.5px;
 }
 
+/* ========= order form ========== */
+.landing-box {
+  border: 2px solid #d4af37;
+  padding: 20px;
+  background: #fff;
+}
+
+/* PRODUCT */
+.landing-product-item {
+  display: block;
+  border: 1px solid #ddd;
+  margin-bottom: 10px;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.landing-product-item input {
+  margin-right: 10px;
+}
+
+.landing-product-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.landing-product-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.landing-product-left img {
+  width: 60px;
+}
+
+.landing-qty {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+
+.landing-qty button {
+  border: 1px solid #ccc;
+  background: #fff;
+  width: 25px;
+}
+
+/* RADIO */
+.landing-radio {
+  display: block;
+  cursor: pointer;
+}
+
+/* SHIPPING */
+.landing-shipping {
+  border: 1px solid #ddd;
+}
+
+.landing-ship-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+  cursor: pointer;
+}
+
+.landing-ship-row div {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* SUMMARY */
+.landing-summary {
+  background: #fafafa;
+  padding: 15px;
+  border: 1px solid #ddd;
+}
+
+.landing-summary-product img {
+  width: 40px;
+}
+
+/* CASH BOX */
+.landing-cash-box {
+  background: #eee;
+  padding: 10px;
+  font-size: 14px;
+}
+
+/* BUTTON */
+.landing-btn {
+  width: 100%;
+  background: #000;
+  color: #fff;
+  padding: 12px;
+  border: none;
+  font-weight: bold;
+}
+
 /* =================== Responsive =================== */
 @media (max-width: 768px) {
     .hero-section {
