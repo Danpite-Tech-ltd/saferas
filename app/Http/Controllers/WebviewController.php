@@ -199,7 +199,7 @@ class WebviewController extends Controller
     public function campaign($slug)
     {
         $campaign = Campaign::where('slug',$slug)->first();
-        return view('webview.content.campaign.campaign');
+        return view('webview.content.campaign.campaign',compact('campaign'));
     }
 
    public function shopPage(Request $request)

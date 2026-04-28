@@ -1,0 +1,100 @@
+@import url("https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Spectral:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap");
+* {
+    margin: 0;
+    font-family: "Hind Siliguri", sans-serif;
+}
+
+.hero-section {
+    background: linear-gradient(180deg, #ffd898 0%, #f0e5bb 62%);
+    padding: 40px 0;
+    position: relative;
+    text-align: center;
+}
+
+.landing-main-title {
+    color: red;
+    font-weight: bold;
+    font-size: 35px;
+}
+.landing-sub-title {
+    font-size: 25px;
+    font-weight: bold;
+}
+
+.landing-order-btn {
+    padding: 10px 30px;
+    text-decoration: none;
+    background-color: #000000;
+    font-size: 25px;
+    font-weight: 600;
+    color: #fff;
+    border-style: solid;
+    border-width: 2px;
+    border-color: #c9a24d;
+    border-radius: 100px;
+    display: inline-block;
+    animation: pulse 1.5s infinite;
+}
+
+.campaign-banner-img {
+    border: 3px solid #c9a24d;
+    width: 75%;
+}
+
+.price-section {
+    margin-top: 15px;
+}
+
+.campaign-old-price {
+    color: red;
+    font-size: 25px;
+    font-weight: bold;
+}
+
+.campaign-new-price {
+    color: #523f0f;
+    font-size: 32px;
+    font-weight: bold;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.08);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* =================== Responsive =================== */
+@media (max-width: 768px) {
+    .hero-section {
+        padding: 25px 0;
+    }
+    .landing-main-title {
+        font-size: 22px;
+        line-height: 32px;
+    }
+    .landing-sub-title {
+        font-size: 20px;
+    }
+    .campaign-banner-img {
+        width: 100%;
+    }
+    .landing-order-btn {
+        font-size: 20px;
+    }
+    .campaign-old-price{
+        font-size: 22px;
+    }
+    .campaign-new-price {
+        color: #523f0f;
+        font-size: 20px;
+        font-weight: bold;
+    }
+}
