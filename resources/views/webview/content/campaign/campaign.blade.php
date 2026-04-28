@@ -130,7 +130,6 @@
         <form action="{{ route('campaign.submit') }}" method="POST">
             @csrf
 
-            <!-- 🔥 HIDDEN FIELDS FOR LARAVEL -->
             <input type="hidden" name="product_id" id="form_product_id">
             <input type="hidden" name="product_name" id="form_product_name">
             <input type="hidden" name="color" id="form_color">

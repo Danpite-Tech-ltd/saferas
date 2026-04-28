@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Models\Subcategory;
 use App\Models\Category;
 use App\Models\Attrvalue;
+use App\Models\Orderproduct;
 use App\Models\Basicinfo;
 use App\Models\Blog;
 use App\Models\Order;
@@ -21,10 +22,12 @@ use App\Models\Varient;
 use App\Models\Weight;
 use App\Models\React;
 use App\Models\Review;
+use App\Models\Admin;
 use App\Models\Size;
 use App\Models\Usecoupon;
 use App\Models\Like;
 use App\Models\Share;
+use Illuminate\Support\Facades\Hash;
 use App\Models\Customer;
 use App\Models\Coupon;
 use App\Models\Mainproduct;
@@ -202,12 +205,149 @@ class WebviewController extends Controller
 
         $productIds = json_decode($campaign->product_id, true);
         $products = Product::with(['sizes', 'variants'])->whereIn('id', $productIds)->get();
-        return view('webview.content.campaign.campaign', compact('campaign','products'));
+        return view('webview.content.campaign.campaign', compact('campaign', 'products'));
     }
 
     public function campaign_submit(Request $request)
     {
-        return $request;
+        // return $request;
+        $request->validate([
+            'name' => 'required',
+            'phone' => 'required',
+            'address' => 'required'
+        ]);
+
+        $block = User::where('ip', \Request::ip())
+            ->where('status', 'Block')
+            ->first();
+
+        if ($block) {
+            return redirect('ip-block');
+        }
+
+
+        if (!$request->product_id || !$request->qty) {
+            return redirect('/empty-cart');
+        }
+
+        $product = Product::find($request->product_id);
+
+        if (!$product) {
+            return redirect('/empty-cart');
+        }
+
+        $excutomer = Customer::where('customerPhone', $request->phone)
+            ->latest()
+            ->first();
+
+        if (isset($excutomer)) {
+            $exorder = Order::where('id', $excutomer->order_id)->first();
+
+            if ($exorder && in_array($exorder->status, [
+                'Pending',
+                'Packaging',
+                'Ready to Ship',
+                'Hold'
+            ])) {
+                return redirect('/exist-order');
+            }
+        }
+
+        $admin = Admin::whereHas('roles', function ($q) {
+            $q->where('name', 'user');
+        })->where('status', 'Active')
+            ->inRandomOrder()
+            ->first();
+
+        if (!$admin) {
+            $admin = Admin::where('status', 'Active')->first();
+        }
+
+
+        $order = new Order();
+
+        $exuser = User::where('email', $request->phone)->first();
+
+        if ($exuser) {
+            Auth::login($exuser);
+            $order->user_id = $exuser->id;
+        } else {
+            $user = new User();
+            $user->name = $request->name;
+            $user->email = $request->phone;
+            $user->otp = random_int(100000, 999999);
+            $user->active_status = 0;
+            $user->ip = \Request::ip();
+            $user->password = Hash::make($request->phone);
+            $user->save();
+
+            Auth::login($user);
+            $order->user_id = $user->id;
+        }
+
+        $order->store_id = 1;
+        $order->web_id = 'LandingPage';
+        $order->invoiceID = $this->uniqueID();
+        $order->deliveryCharge = $request->ship;
+        $order->city_id = $request->city_id ?? null;
+        $order->zone_id = $request->zone_id ?? null;
+
+        /* VAT */
+        $vatInfo = Basicinfo::first();
+        if ($vatInfo && $vatInfo->vat_status == 'On') {
+            $vat = ($request->total * $vatInfo->vat) / 100;
+        } else {
+            $vat = 0;
+        }
+
+        $total = $request->total;
+
+        $order->vat = $vat;
+        $order->orderDate = date('Y-m-d');
+        $order->subTotal = $total + $vat;
+        $order->payment_type_id = $request->paymentType ?? 1;
+        $order->customerNote = $request->note ?? null;
+        $order->save();
+
+        $customer = new Customer();
+        $customer->order_id = $order->id;
+        $customer->customerName = $request->name;
+        $customer->customerPhone = $request->phone;
+        $customer->customerAddress = $request->address;
+        $customer->save();
+
+        $product = Product::find($request->product_id);
+
+        $orderProduct = new Orderproduct();
+        $orderProduct->order_id = $order->id;
+        $orderProduct->product_id = $product->id;
+        $orderProduct->productCode = $product->ProductSku;
+        $orderProduct->productName = $product->ProductName;
+        $orderProduct->color = $request->color ?? null;
+        $orderProduct->size = $request->size ?? null;
+        $orderProduct->quantity = $request->qty;
+        $orderProduct->productPrice = $request->price;
+        $orderProduct->save();
+
+        Session::put('order_id', $order->id);
+
+        toastr()->info('Order Placed Successfully', 'Complete', [
+            "positionClass" => "toast-top-center"
+        ]);
+
+        return redirect('order-received');
+    }
+
+    public function uniqueID()
+    {
+        $lastOrder = Order::latest('id')->first();
+        if ($lastOrder) {
+            $orderID = $lastOrder->id + 1;
+        } else {
+            $orderID = 1;
+        }
+
+        return 'SF001' . $orderID;
     }
 
     public function shopPage(Request $request)
