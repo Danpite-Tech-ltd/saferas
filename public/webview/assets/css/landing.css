@@ -104,7 +104,7 @@
 .landing-order-btn2 {
     padding: 10px 30px;
     text-decoration: none;
-    background-color: #FC5A5A;
+    background-color: #fc5a5a;
     font-size: 25px;
     font-weight: 600;
     color: #fff;
@@ -114,6 +114,82 @@
     border-radius: 100px;
     display: inline-block;
     animation: pulse 1.5s infinite;
+}
+
+/* ========= details ========== */
+.product-details {
+    padding: 40px 0;
+    background: #dfdfdf;
+}
+.landing-productdetails-title {
+    text-align: center;
+    font-weight: bold;
+    font-size: 32px;
+}
+.details-line {
+    position: absolute;
+    background: #ffbe00;
+    width: 125px;
+    height: 3px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+.landing-product-description {
+    width: 80%;
+    margin: auto;
+}
+
+.landing-emergency-contact h2 {
+    text-align: center;
+    font-size: 28px;
+    font-weight: bold;
+}
+.landing-emergency-info {
+    width: 70%;
+    margin: auto;
+}
+.landing-contact-phone {
+    text-decoration: none;
+    background: #000;
+    color: #fff;
+    padding: 6px 60px;
+    font-size: 30px;
+    border-radius: 5px;
+}
+.contact-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: 600;
+    color: #fff;
+    transition: 0.3s ease;
+}
+
+.phone-box {
+    background: #000;
+}
+
+.whatsapp-box {
+    background: #166534; /* dark green */
+}
+
+.contact-box:hover {
+    opacity: 0.9;
+}
+
+.contact-box .icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.contact-box .text {
+    letter-spacing: 0.5px;
 }
 
 /* =================== Responsive =================== */
@@ -134,12 +210,26 @@
     .landing-order-btn {
         font-size: 20px;
     }
-    .campaign-old-price{
+    .campaign-old-price {
         font-size: 22px;
     }
     .campaign-new-price {
         color: #523f0f;
         font-size: 20px;
         font-weight: bold;
+    }
+
+    .landing-productdetails-title {
+        font-size: 22px;
+    }
+    .landing-product-description {
+        width: 100%;
+    }
+    .landing-emergency-info {
+        width: 100%;
+    }
+    .contact-box {
+        font-size: 16px;
+        padding: 12px;
     }
 }

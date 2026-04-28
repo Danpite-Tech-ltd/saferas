@@ -68,6 +68,61 @@
         </div>
     </section>
     {{-- ======================= product section end ====================== --}}
+    {{-- ====================product details section start ================ --}}
+    <section class="product-details">
+        <div class="container">
+            <h2 class="landing-productdetails-title">আমাদের পণ্যের ডিটেইলস</h2>
+            <span class="details-line"></span>
+            <div class="mt-4">
+                <div class="landing-product-description">
+                    {!! $campaign->description !!}
+                </div>
+            </div>
+        </div>
+    </section>
+    <div class="mt-4 text-center">
+        <a href="#" class="landing-order-btn2">🛒 অর্ডার করতে চাই</a>
+    </div>
+
+    <div class="container mt-5">
+        <div class="landing-emergency-contact">
+            <h2>জরুরি প্রয়োজনে কল অথবা হোয়াটসঅ্যাপ করুন</h2>
+            <div class="landing-emergency-info">
+                <div class="mt-2 contact-row row g-3">
+
+                    <!-- Phone -->
+                    <div class="col-12 col-md-6">
+                        <a href="tel:{{ $basicinfo->phone_one }}" class="contact-box phone-box">
+                            <span class="icon">
+                                <svg viewBox="0 0 24 24" width="20" height="20">
+                                    <path
+                                        d="M6.6 10.8c1.4 2.8 3.8 5.2 6.6 6.6l2.2-2.2c.3-.3.8-.4 1.2-.3 1.3.4 2.7.6 4.1.6.7 0 1.2.5 1.2 1.2V21c0 .7-.5 1.2-1.2 1.2C11.3 22.2 1.8 12.7 1.8 1.2 1.8.5 2.3 0 3 0h3.5c.7 0 1.2.5 1.2 1.2 0 1.4.2 2.8.6 4.1.1.4 0 .9-.3 1.2l-2.2 2.3z"
+                                        fill="#fff" />
+                                </svg>
+                            </span>
+                            <span class="text">{{ $basicinfo->phone_one }}</span>
+                        </a>
+                    </div>
+
+                    <!-- WhatsApp -->
+                    <div class="col-12 col-md-6">
+                        <a href="https://wa.me/{{ $basicinfo->wp_1 }}" target="_blank" class="contact-box whatsapp-box">
+                            <span class="icon">
+                                <svg viewBox="0 0 32 32" width="20" height="20">
+                                    <path fill="#fff"
+                                        d="M16 .4C7.4.4.4 7.4.4 16c0 2.8.7 5.5 2.1 7.9L.2 31.8l8.1-2.1c2.3 1.3 4.9 2 7.7 2 8.6 0 15.6-7 15.6-15.6S24.6.4 16 .4zm0 28.5c-2.4 0-4.7-.6-6.7-1.8l-.5-.3-4.8 1.3 1.3-4.7-.3-.5C3.8 20.7 3.2 18.4 3.2 16 3.2 9.4 8.6 4 15.2 4S27.2 9.4 27.2 16 22.6 28.9 16 28.9zm6.3-9.3c-.3-.2-1.8-.9-2.1-1-.3-.1-.5-.2-.7.2-.2.3-.8 1-.9 1.2-.2.2-.3.2-.6.1-1.7-.8-2.8-1.5-3.9-3.3-.3-.5.3-.5.8-1.6.1-.2.1-.4 0-.6-.1-.2-.7-1.6-1-2.2-.3-.6-.6-.5-.8-.5h-.7c-.2 0-.6.1-.9.4-.3.3-1.2 1.2-1.2 2.9s1.2 3.4 1.4 3.6c.2.2 2.4 3.7 5.9 5.2.8.3 1.4.5 1.9.6.8.3 1.6.2 2.2.1.7-.1 1.8-.7 2.1-1.3.3-.6.3-1.2.2-1.3-.1-.2-.3-.3-.6-.5z" />
+                                </svg>
+                            </span>
+                            <span class="text">Whatsapp</span>
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- ====================product details section end ================== --}}
 
 </body>
 
