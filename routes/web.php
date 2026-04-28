@@ -30,6 +30,7 @@ Route::post('/cookie-consent', function (Request $request) {
 
 Route::get('/', [WebviewController::class, 'mainview']);
 Route::get('/campaign/{slug}', [WebviewController::class, 'campaign'])->name('campaign');
+Route::post('/campaign/submit', [WebviewController::class, 'campaign_submit'])->name('campaign.submit');
 Route::post('newslatter/post',[WebviewController::class,'newslatter_post'])->name('newslatter.post');
 Route::get('best-selling-product',[WebviewController::class,'best_selling_product'])->name('best-selling-product');
 Route::get('all-product',[WebviewController::class,'all_product'])->name('all-product');

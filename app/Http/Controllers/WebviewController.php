@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Models\Subcategory;
 use App\Models\Category;
 use App\Models\Attrvalue;
+use App\Models\Orderproduct;
 use App\Models\Basicinfo;
 use App\Models\Blog;
 use App\Models\Order;
@@ -21,10 +22,12 @@ use App\Models\Varient;
 use App\Models\Weight;
 use App\Models\React;
 use App\Models\Review;
+use App\Models\Admin;
 use App\Models\Size;
 use App\Models\Usecoupon;
 use App\Models\Like;
 use App\Models\Share;
+use Illuminate\Support\Facades\Hash;
 use App\Models\Customer;
 use App\Models\Coupon;
 use App\Models\Mainproduct;
@@ -50,7 +53,7 @@ class WebviewController extends Controller
         $channel->addChild('title', 'RASHI BD');
         $channel->addChild('link', url('https://www.rashibd.com/'));
         $channel->addChild('description', 'RASHI BD is an online luxury store offering a wide range of premium bags and accessories, including leather handbags, backpacks, and clutches. The site features elegant designs for both men and women and regularly provides discounts on select items.');
-        $idnew=0;
+        $idnew = 0;
         foreach ($mainproducts as $index => $mainproduct) {
 
             $relatedProducts = json_decode($mainproduct->RelatedProductIds, true); // Convert JSON to an array
@@ -65,7 +68,7 @@ class WebviewController extends Controller
                         $sizes = Size::where('product_id', $product->id)->get()->pluck('size');
                         $size = Size::where('product_id', $product->id)->first();
                         $item = $channel->addChild('item');
-                        $idnew=$idnew+1;
+                        $idnew = $idnew + 1;
                         $item->addChild('g:id', $idnew);
                         $item->addChild('g:item_group_id', $mainproduct->id);
                         $item->addChild('g:title', $product->ProductName);
@@ -191,20 +194,165 @@ class WebviewController extends Controller
                 ->take(12)
                 ->get();
         });
-    $blogs = Blog::where('status','Active')->latest()->get();
-     $medias = Menu::where('status', 'Active')->get();
-        return view('webview.content.maincontent', ['categories' => $categories, 'allproducts' => $allproducts, 'sliders' => $sliders, 'adds' => $adds, 'addbottoms' => $addbottoms, 'topproducts' => $topproducts, 'categoryproducts' => $categoryproducts,'medias'=> $medias, 'ad_one' => $ad_one, 'ad_two' => $ad_two, 'ad_three' => $ad_three,'ad_four' => $ad_four, 'blogs' => $blogs,'ad_five' => $ad_five]);
+        $blogs = Blog::where('status', 'Active')->latest()->get();
+        $medias = Menu::where('status', 'Active')->get();
+        return view('webview.content.maincontent', ['categories' => $categories, 'allproducts' => $allproducts, 'sliders' => $sliders, 'adds' => $adds, 'addbottoms' => $addbottoms, 'topproducts' => $topproducts, 'categoryproducts' => $categoryproducts, 'medias' => $medias, 'ad_one' => $ad_one, 'ad_two' => $ad_two, 'ad_three' => $ad_three, 'ad_four' => $ad_four, 'blogs' => $blogs, 'ad_five' => $ad_five]);
     }
 
     public function campaign($slug)
     {
-        $campaign = Campaign::where('slug',$slug)->first();
-        return view('webview.content.campaign.campaign');
+        $campaign = Campaign::where('slug', $slug)->first();
+
+        $productIds = json_decode($campaign->product_id, true);
+        $products = Product::with(['sizes', 'variants'])->whereIn('id', $productIds)->get();
+        return view('webview.content.campaign.campaign', compact('campaign', 'products'));
     }
 
-   public function shopPage(Request $request)
+    public function campaign_submit(Request $request)
     {
-        $categoryproducts = Mainproduct::where('status','Active')->inRandomOrder()->get();
+        // return $request;
+        $request->validate([
+            'name' => 'required',
+            'phone' => 'required',
+            'address' => 'required'
+        ]);
+
+        $block = User::where('ip', \Request::ip())
+            ->where('status', 'Block')
+            ->first();
+
+        if ($block) {
+            return redirect('ip-block');
+        }
+
+
+        if (!$request->product_id || !$request->qty) {
+            return redirect('/empty-cart');
+        }
+
+        $product = Product::find($request->product_id);
+
+        if (!$product) {
+            return redirect('/empty-cart');
+        }
+
+        $excutomer = Customer::where('customerPhone', $request->phone)
+            ->latest()
+            ->first();
+
+        if (isset($excutomer)) {
+            $exorder = Order::where('id', $excutomer->order_id)->first();
+
+            if ($exorder && in_array($exorder->status, [
+                'Pending',
+                'Packaging',
+                'Ready to Ship',
+                'Hold'
+            ])) {
+                return redirect('/exist-order');
+            }
+        }
+
+        $admin = Admin::whereHas('roles', function ($q) {
+            $q->where('name', 'user');
+        })->where('status', 'Active')
+            ->inRandomOrder()
+            ->first();
+
+        if (!$admin) {
+            $admin = Admin::where('status', 'Active')->first();
+        }
+
+
+        $order = new Order();
+
+        $exuser = User::where('email', $request->phone)->first();
+
+        if ($exuser) {
+            Auth::login($exuser);
+            $order->user_id = $exuser->id;
+        } else {
+            $user = new User();
+            $user->name = $request->name;
+            $user->email = $request->phone;
+            $user->otp = random_int(100000, 999999);
+            $user->active_status = 0;
+            $user->ip = \Request::ip();
+            $user->password = Hash::make($request->phone);
+            $user->save();
+
+            Auth::login($user);
+            $order->user_id = $user->id;
+        }
+
+        $order->store_id = 1;
+        $order->web_id = 'LandingPage';
+        $order->invoiceID = $this->uniqueID();
+        $order->deliveryCharge = $request->ship;
+        $order->city_id = $request->city_id ?? null;
+        $order->zone_id = $request->zone_id ?? null;
+
+        /* VAT */
+        $vatInfo = Basicinfo::first();
+        if ($vatInfo && $vatInfo->vat_status == 'On') {
+            $vat = ($request->total * $vatInfo->vat) / 100;
+        } else {
+            $vat = 0;
+        }
+
+        $total = $request->total;
+
+        $order->vat = $vat;
+        $order->orderDate = date('Y-m-d');
+        $order->subTotal = $total + $vat;
+        $order->payment_type_id = $request->paymentType ?? 1;
+        $order->customerNote = $request->note ?? null;
+        $order->save();
+
+        $customer = new Customer();
+        $customer->order_id = $order->id;
+        $customer->customerName = $request->name;
+        $customer->customerPhone = $request->phone;
+        $customer->customerAddress = $request->address;
+        $customer->save();
+
+        $product = Product::find($request->product_id);
+
+        $orderProduct = new Orderproduct();
+        $orderProduct->order_id = $order->id;
+        $orderProduct->product_id = $product->id;
+        $orderProduct->productCode = $product->ProductSku;
+        $orderProduct->productName = $product->ProductName;
+        $orderProduct->color = $request->color ?? null;
+        $orderProduct->size = $request->size ?? null;
+        $orderProduct->quantity = $request->qty;
+        $orderProduct->productPrice = $request->price;
+        $orderProduct->save();
+
+        Session::put('order_id', $order->id);
+
+        toastr()->info('Order Placed Successfully', 'Complete', [
+            "positionClass" => "toast-top-center"
+        ]);
+
+        return redirect('order-received');
+    }
+
+    public function uniqueID()
+    {
+        $lastOrder = Order::latest('id')->first();
+        if ($lastOrder) {
+            $orderID = $lastOrder->id + 1;
+        } else {
+            $orderID = 1;
+        }
+
+        return 'SF001' . $orderID;
+    }
+
+    public function shopPage(Request $request)
+    {
+        $categoryproducts = Mainproduct::where('status', 'Active')->inRandomOrder()->get();
 
         return view('webview.content.product.shoppage', ['categoryproducts' => $categoryproducts]);
     }
@@ -387,9 +535,9 @@ class WebviewController extends Controller
 
     public function blog_details($slug)
     {
-        $blog = Blog::where('slug',$slug)->first();
+        $blog = Blog::where('slug', $slug)->first();
         $blogs = Blog::latest()->get();
-        return view('webview.content.product.blog_details',compact('blog','blogs'));
+        return view('webview.content.product.blog_details', compact('blog', 'blogs'));
     }
 
     public function profile()
@@ -475,7 +623,7 @@ class WebviewController extends Controller
 
     public function viewproductdetails($slug)
     {
-        $shipping =Basicinfo::first();
+        $shipping = Basicinfo::first();
         $singlemain = Mainproduct::where('ProductSlug', $slug)->select('id', 'category_id', 'RelatedProductIds')->first();
         $id = json_decode($singlemain->RelatedProductIds)[0]->productID;
         $productdetails = Product::with([
@@ -492,12 +640,12 @@ class WebviewController extends Controller
         $sizesolds = Size::where('product_id', $productdetails->id)->where('status', 'Active')->get();
         $weightolds = Weight::where('product_id', $productdetails->id)->get();
 
-        return view('webview.content.product.details', ['sizesolds' => $sizesolds, 'weightolds' => $weightolds, 'singlemain' => $singlemain, 'varients' => $varients, 'relatedproducts' => $relatedproducts, 'productdetails' => $productdetails , 'shipping'=>$shipping]);
+        return view('webview.content.product.details', ['sizesolds' => $sizesolds, 'weightolds' => $weightolds, 'singlemain' => $singlemain, 'varients' => $varients, 'relatedproducts' => $relatedproducts, 'productdetails' => $productdetails, 'shipping' => $shipping]);
     }
 
     public function loadrelatedpro(Request $request)
     {
-        $shipping =Basicinfo::first();
+        $shipping = Basicinfo::first();
         $singlemain = Mainproduct::where('id', $request->mainproduct_id)->select('id', 'category_id', 'RelatedProductIds')->first();
         $productdetails = Product::with([
             'sizes' => function ($query) {
@@ -511,7 +659,7 @@ class WebviewController extends Controller
         $sizes = Size::where('product_id', $productdetails->id)->where('status', 'Active')->get();
         $weights = Weight::where('product_id', $productdetails->id)->get();
 
-        return view('webview.content.product.loadproduct', ['singlemain' => $singlemain, 'varients' => $varients, 'sizes' => $sizes, 'weights' => $weights, 'productdetails' => $productdetails, 'shipping'=>$shipping]);
+        return view('webview.content.product.loadproduct', ['singlemain' => $singlemain, 'varients' => $varients, 'sizes' => $sizes, 'weights' => $weights, 'productdetails' => $productdetails, 'shipping' => $shipping]);
     }
 
     public function menuindex($slug)
@@ -728,17 +876,17 @@ class WebviewController extends Controller
         $newslatter->email = $request->email;
         $newslatter->save();
 
-        return back()->with('success','Subscribe Success!');
+        return back()->with('success', 'Subscribe Success!');
     }
 
     public function best_selling_product()
     {
         $bestselling_products = Mainproduct::where('status', 'Active')->where('top_rated', '1')->orderByRaw('ISNULL(`position`), `position` ASC')->select('id', 'ProductName', 'ProductSlug', 'ProductImage', 'status', 'position', 'top_rated', 'RelatedProductIds')->inRandomOrder()->get();
-        return view('webview.content.product.best_selling_product',compact('bestselling_products'));
+        return view('webview.content.product.best_selling_product', compact('bestselling_products'));
     }
     public function all_product()
     {
         $allproducts = Mainproduct::where('status', 'Active')->select('id', 'ProductName', 'ProductSlug', 'ProductImage', 'status', 'position', 'top_rated', 'RelatedProductIds')->latest()->get();
-        return view('webview.content.product.all_product',compact('allproducts'));
+        return view('webview.content.product.all_product', compact('allproducts'));
     }
 }

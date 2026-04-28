@@ -26,6 +26,10 @@ class Product extends Model
     {
         return $this->hasMany(Size::class, 'product_id');
     }
+    public function variants()
+    {
+        return $this->hasMany(Varient::class, 'product_id');
+    }
 
     public function weights()
     {
