@@ -43,6 +43,31 @@
         </div>
     </section>
     {{-- ========================== hero section end ====================== --}}
+    {{-- ===================== product section start ====================== --}}
+    <section class="py-4 landing-product-section">
+        <div class="container">
+            <div class="row g-3">
+                @foreach ($products as $value)
+                    <div class="col-6 col-lg-4">
+                        <div class="landing-product-card position-relative">
+                            <span class="landing-product-badge">Code - {{ $value->ProductSku }}</span>
+                            <img src="{{ asset($value->ProductImage) }}" class="rounded img-fluid" alt="">
+
+                            <div class="landing-productorder-btn">
+                                <a class="btn w-100">
+                                    🛒 অর্ডার করতে চাই
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+            <div class="mt-4 text-center">
+                <a href="#" class="landing-order-btn2">🛒 অর্ডার করতে চাই</a>
+            </div>
+        </div>
+    </section>
+    {{-- ======================= product section end ====================== --}}
 
 </body>
 

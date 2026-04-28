@@ -50,7 +50,7 @@ class WebviewController extends Controller
         $channel->addChild('title', 'RASHI BD');
         $channel->addChild('link', url('https://www.rashibd.com/'));
         $channel->addChild('description', 'RASHI BD is an online luxury store offering a wide range of premium bags and accessories, including leather handbags, backpacks, and clutches. The site features elegant designs for both men and women and regularly provides discounts on select items.');
-        $idnew=0;
+        $idnew = 0;
         foreach ($mainproducts as $index => $mainproduct) {
 
             $relatedProducts = json_decode($mainproduct->RelatedProductIds, true); // Convert JSON to an array
@@ -65,7 +65,7 @@ class WebviewController extends Controller
                         $sizes = Size::where('product_id', $product->id)->get()->pluck('size');
                         $size = Size::where('product_id', $product->id)->first();
                         $item = $channel->addChild('item');
-                        $idnew=$idnew+1;
+                        $idnew = $idnew + 1;
                         $item->addChild('g:id', $idnew);
                         $item->addChild('g:item_group_id', $mainproduct->id);
                         $item->addChild('g:title', $product->ProductName);
@@ -191,20 +191,23 @@ class WebviewController extends Controller
                 ->take(12)
                 ->get();
         });
-    $blogs = Blog::where('status','Active')->latest()->get();
-     $medias = Menu::where('status', 'Active')->get();
-        return view('webview.content.maincontent', ['categories' => $categories, 'allproducts' => $allproducts, 'sliders' => $sliders, 'adds' => $adds, 'addbottoms' => $addbottoms, 'topproducts' => $topproducts, 'categoryproducts' => $categoryproducts,'medias'=> $medias, 'ad_one' => $ad_one, 'ad_two' => $ad_two, 'ad_three' => $ad_three,'ad_four' => $ad_four, 'blogs' => $blogs,'ad_five' => $ad_five]);
+        $blogs = Blog::where('status', 'Active')->latest()->get();
+        $medias = Menu::where('status', 'Active')->get();
+        return view('webview.content.maincontent', ['categories' => $categories, 'allproducts' => $allproducts, 'sliders' => $sliders, 'adds' => $adds, 'addbottoms' => $addbottoms, 'topproducts' => $topproducts, 'categoryproducts' => $categoryproducts, 'medias' => $medias, 'ad_one' => $ad_one, 'ad_two' => $ad_two, 'ad_three' => $ad_three, 'ad_four' => $ad_four, 'blogs' => $blogs, 'ad_five' => $ad_five]);
     }
 
     public function campaign($slug)
     {
-        $campaign = Campaign::where('slug',$slug)->first();
-        return view('webview.content.campaign.campaign',compact('campaign'));
+        $campaign = Campaign::where('slug', $slug)->first();
+
+        $productIds = json_decode($campaign->product_id, true);
+        $products = Product::whereIn('id', $productIds)->get();
+        return view('webview.content.campaign.campaign', compact('campaign','products'));
     }
 
-   public function shopPage(Request $request)
+    public function shopPage(Request $request)
     {
-        $categoryproducts = Mainproduct::where('status','Active')->inRandomOrder()->get();
+        $categoryproducts = Mainproduct::where('status', 'Active')->inRandomOrder()->get();
 
         return view('webview.content.product.shoppage', ['categoryproducts' => $categoryproducts]);
     }
@@ -387,9 +390,9 @@ class WebviewController extends Controller
 
     public function blog_details($slug)
     {
-        $blog = Blog::where('slug',$slug)->first();
+        $blog = Blog::where('slug', $slug)->first();
         $blogs = Blog::latest()->get();
-        return view('webview.content.product.blog_details',compact('blog','blogs'));
+        return view('webview.content.product.blog_details', compact('blog', 'blogs'));
     }
 
     public function profile()
@@ -475,7 +478,7 @@ class WebviewController extends Controller
 
     public function viewproductdetails($slug)
     {
-        $shipping =Basicinfo::first();
+        $shipping = Basicinfo::first();
         $singlemain = Mainproduct::where('ProductSlug', $slug)->select('id', 'category_id', 'RelatedProductIds')->first();
         $id = json_decode($singlemain->RelatedProductIds)[0]->productID;
         $productdetails = Product::with([
@@ -492,12 +495,12 @@ class WebviewController extends Controller
         $sizesolds = Size::where('product_id', $productdetails->id)->where('status', 'Active')->get();
         $weightolds = Weight::where('product_id', $productdetails->id)->get();
 
-        return view('webview.content.product.details', ['sizesolds' => $sizesolds, 'weightolds' => $weightolds, 'singlemain' => $singlemain, 'varients' => $varients, 'relatedproducts' => $relatedproducts, 'productdetails' => $productdetails , 'shipping'=>$shipping]);
+        return view('webview.content.product.details', ['sizesolds' => $sizesolds, 'weightolds' => $weightolds, 'singlemain' => $singlemain, 'varients' => $varients, 'relatedproducts' => $relatedproducts, 'productdetails' => $productdetails, 'shipping' => $shipping]);
     }
 
     public function loadrelatedpro(Request $request)
     {
-        $shipping =Basicinfo::first();
+        $shipping = Basicinfo::first();
         $singlemain = Mainproduct::where('id', $request->mainproduct_id)->select('id', 'category_id', 'RelatedProductIds')->first();
         $productdetails = Product::with([
             'sizes' => function ($query) {
@@ -511,7 +514,7 @@ class WebviewController extends Controller
         $sizes = Size::where('product_id', $productdetails->id)->where('status', 'Active')->get();
         $weights = Weight::where('product_id', $productdetails->id)->get();
 
-        return view('webview.content.product.loadproduct', ['singlemain' => $singlemain, 'varients' => $varients, 'sizes' => $sizes, 'weights' => $weights, 'productdetails' => $productdetails, 'shipping'=>$shipping]);
+        return view('webview.content.product.loadproduct', ['singlemain' => $singlemain, 'varients' => $varients, 'sizes' => $sizes, 'weights' => $weights, 'productdetails' => $productdetails, 'shipping' => $shipping]);
     }
 
     public function menuindex($slug)
@@ -728,17 +731,17 @@ class WebviewController extends Controller
         $newslatter->email = $request->email;
         $newslatter->save();
 
-        return back()->with('success','Subscribe Success!');
+        return back()->with('success', 'Subscribe Success!');
     }
 
     public function best_selling_product()
     {
         $bestselling_products = Mainproduct::where('status', 'Active')->where('top_rated', '1')->orderByRaw('ISNULL(`position`), `position` ASC')->select('id', 'ProductName', 'ProductSlug', 'ProductImage', 'status', 'position', 'top_rated', 'RelatedProductIds')->inRandomOrder()->get();
-        return view('webview.content.product.best_selling_product',compact('bestselling_products'));
+        return view('webview.content.product.best_selling_product', compact('bestselling_products'));
     }
     public function all_product()
     {
         $allproducts = Mainproduct::where('status', 'Active')->select('id', 'ProductName', 'ProductSlug', 'ProductImage', 'status', 'position', 'top_rated', 'RelatedProductIds')->latest()->get();
-        return view('webview.content.product.all_product',compact('allproducts'));
+        return view('webview.content.product.all_product', compact('allproducts'));
     }
 }

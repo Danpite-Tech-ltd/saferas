@@ -71,6 +71,51 @@
     }
 }
 
+/*  ======= product section ========= */
+.landing-product-card {
+    border: 2px solid #f4b400;
+    border-radius: 12px;
+    padding: 8px;
+    background: #fff;
+}
+
+.landing-product-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #5c4500;
+    color: #fff;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.landing-productorder-btn {
+    margin-top: 10px;
+}
+
+.landing-productorder-btn .btn {
+    background: #000;
+    color: #f4b400;
+    border-radius: 8px;
+    padding: 5px;
+    font-size: 24px;
+}
+.landing-order-btn2 {
+    padding: 10px 30px;
+    text-decoration: none;
+    background-color: #FC5A5A;
+    font-size: 25px;
+    font-weight: 600;
+    color: #fff;
+    border-style: solid;
+    border-width: 2px;
+    border-color: #c9a24d;
+    border-radius: 100px;
+    display: inline-block;
+    animation: pulse 1.5s infinite;
+}
+
 /* =================== Responsive =================== */
 @media (max-width: 768px) {
     .hero-section {
